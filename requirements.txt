@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+transformers
+datasets
+torch
+accelerate
+langchain-groq
+python-dotenv
+jinja2

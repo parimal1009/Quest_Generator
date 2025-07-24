@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fantasy Quest Generator</title>
+    <style>
+        :root {
+            --primary: #4e54c8;
+            --secondary: #8f94fb;
+            --dark: #1a1c2c;
+            --light: #f4f4f8;
+        }
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, var(--dark) 0%, #2d3250 100%);
+            color: var(--light);
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            font-size: 1rem;
+        }
+        button {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: block;
+            width: 100%;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+        .result-card {
+            display: none;
+        }
+        .quest-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+        .model-info {
+            margin-top: 1rem;
+            font-style: italic;
+            color: #a0a0c0;
+            text-align: right;
+        }
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        .lds-ripple {
+            display: inline-block;
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+        .lds-ripple div {
+            position: absolute;
+            border: 4px solid var(--primary);
+            opacity: 1;
+            border-radius: 50%;
+            animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+        }
+        .lds-ripple div:nth-child(2) {
+            animation-delay: -0.5s;
+        }
+        @keyframes lds-ripple {
+            0% {
+                top: 36px;
+                left: 36px;
+                width: 0;
+                height: 0;
+                opacity: 0;
+            }
+            4.9% {
+                top: 36px;
+                left: 36px;
+                width: 0;
+                height: 0;
+                opacity: 0;
+            }
+            5% {
+                top: 36px;
+                left: 36px;
+                width: 0;
+                height: 0;
+                opacity: 1;
+            }
+            100% {
+                top: 0px;
+                left: 0px;
+                width: 72px;
+                height: 72px;
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Fantasy Quest Generator</h1>
+            <p>Create immersive RPG quests with AI-powered storytelling</p>
+        </header>
+
+        <div class="card">
+            <div class="form-group">
+                <label for="prompt">Quest Prompt:</label>
+                <input type="text" id="prompt" placeholder="Enter quest concept (e.g. 'Retrieve the Crystal of Eternal Light')">
+            </div>
+            <button id="generate-btn">Generate Quest</button>
+        </div>
+
+        <div class="loader" id="loader">
+            <div class="lds-ripple"><div></div><div></div></div>
+            <p>Weaving your fantasy tale...</p>
+        </div>
+
+        <div class="card result-card" id="result-card">
+            <h2>Your Generated Quest</h2>
+            <div class="quest-text" id="quest-text"></div>
+            <div class="model-info" id="model-info"></div>
+            <button id="new-btn">Create Another Quest</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('generate-btn').addEventListener('click', async () => {
+            const prompt = document.getElementById('prompt').value;
+            if (!prompt) return alert('Please enter a quest concept');
+            
+            // Show loader
+            document.getElementById('loader').style.display = 'block';
+            
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt })
+                });
+                
+                if (!response.ok) throw new Error('Generation failed');
+                
+                const { quest, model, time } = await response.json();
+                
+                // Display results
+                document.getElementById('quest-text').textContent = quest;
+                document.getElementById('model-info').innerHTML = 
+                    `Generated by ${model} in ${time}`;
+                document.getElementById('result-card').style.display = 'block';
+                
+            } catch (error) {
+                alert('Error generating quest: ' + error.message);
+            } finally {
+                document.getElementById('loader').style.display = 'none';
+            }
+        });
+        
+        document.getElementById('new-btn').addEventListener('click', () => {
+            document.getElementById('prompt').value = '';
+            document.getElementById('result-card').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
