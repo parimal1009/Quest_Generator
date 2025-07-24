@@ -12,6 +12,21 @@ A powerful AI-powered fantasy quest generator that creates immersive RPG quests 
 - **🔄 Fallback System**: Automatic switching between AI models
 - **📊 Status Monitoring**: Built-in health check endpoints
 
+
+
+## 🖼️ UI Screenshots
+
+<div align="center">
+  <img src="https://github.com/parimal1009/Quest_Generator/blob/main/images/Screenshot%202025-07-24%20220227.png?raw=true" width="800" alt="Quest Generator UI 1" />
+  <br><br>
+  <img src="https://github.com/parimal1009/Quest_Generator/blob/main/images/Screenshot%202025-07-24%20220241.png?raw=true" width="800" alt="Quest Generator UI 2" />
+  <br><br>
+  <img src="https://github.com/parimal1009/Quest_Generator/blob/main/images/Screenshot%202025-07-24%20220306.png?raw=true" width="800" alt="Quest Generator UI 3" />
+  <br><br>
+  <img src="https://github.com/parimal1009/Quest_Generator/blob/main/images/Screenshot%202025-07-24%20220314.png?raw=true" width="800" alt="Quest Generator UI 4" />
+</div>
+
+
 ## 🛠️ Tech Stack
 
 - **Backend**: FastAPI, Python 3.8+
